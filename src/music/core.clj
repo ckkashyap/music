@@ -22,10 +22,16 @@
 
 ;(def yy (. synth loadInstrument (aget instr 50)))
 
-(defn dhun [c f v] (. (aget mc c) noteOn f v))
+(defn play-midi-note [c f v] (. (aget mc c) noteOn f v))
+
+(defn pause-play [ms] (Thread/sleep ms))
 
 (defn note-on [c f v] (. (aget mc c) noteOn f v))
 (defn note-off [c f] (. (aget mc c) noteOff f))
+
+(defn play-line [midi-channel note-seq]
+  (doseq [n note-seq]
+    (play-midi-note midi-channel (:note n) (:velocity n))))  
 
 
 (defn tune [f]
@@ -33,9 +39,14 @@
     (add-2-thread-collection t) (. t start)))
 
 
-(def beats (fn [] (dhun 9 38 1050) (Thread/sleep 100) (dhun 9 42 1050) (Thread/sleep 100)))
+
+
+
+
+
+(def beats (fn [] (play-midi-note 9 38 1050) (Thread/sleep 100) (play-midi-note 9 42 1050) (Thread/sleep 100)))
 
 (defn select-instrument [c i]
   (. (aget mc c) programChange (. (. (aget instr i) getPatch) getProgram)))
 
-(def lead (fn [] (dhun 0 40 550) (Thread/sleep 500)))
+(def lead (fn [] (play-midi-note 0 40 550) (Thread/sleep 500)))
