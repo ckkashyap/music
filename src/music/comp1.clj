@@ -50,20 +50,6 @@
    (where :part (is :thePart))))
 
 
-(def melody1
-  (->>
-
-   (phrase [ 1/3 1/2 1/3 1/2 1/2 3/4 4/5 1/2 3/4 1/2]
-           [  9   9   12   11   9   9   11   9   7   2])
-
-   (then (phrase
-          [5/2  1/3 1/2 1/3 1/2 1/2 3/4 4/5 1/2 3/4 1/2]
-          [nil 9  9   12   11   9   9   11   9   8 ]))
-
-   (where :time  (from delayBeforeStart))
-   (where :part (is :thePart))))
-
-
 (defn doit [] 
   (->>
    melody
