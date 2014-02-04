@@ -1,82 +1,70 @@
 (ns music.comp1
-(:use
+  (:use
    overtone.inst.sampled-piano
-    leipzig.melody
-    leipzig.scale
-    leipzig.canon
-    leipzig.live)
+   leipzig.melody
+   leipzig.scale
+   leipzig.canon
+   leipzig.live)
   (:require [overtone.live :as overtone]
             [overtone.inst.drum :as drum]
             [overtone.inst.synth :as snth]
             [overtone.synth.stringed :as strings]))
 
-
-
 (defmethod play-note :thePart [{midi :pitch}] (snth/overpad midi :amp 0.2))
 (defmethod play-note :theStrumming [{midi :pitch}] (snth/overpad midi :amp 0.2))
-(defmethod play-note :theBeats1 [{midi :pitch}] (drum/hat3 midi :amp 0.2))
-(defmethod play-note :theBeats2 [{midi :pitch}] (drum/kick midi))
+(defmethod play-note :theBeats1 [{midi :pitch}] (drum/kick midi))
+(defmethod play-note :theBeats2 [{midi :pitch}] (drum/hat3 midi :amp 0.02))
 
+
+
+(def beatCount 10)
+(def delayBeforeStart 1/4)
 
 (def beats1
   (->>
-    (phrase (repeat 1/2)
-            (take 30 (cycle [0])))
-     (where :part (is :theBeats1))))
+   (phrase (take (- beatCount 2) (cycle [12/8]))
+           (take (- beatCount 2)  (cycle [0])))
+   (where :time  (from delayBeforeStart))
+   (where :part (is :theBeats1))))
+
 (def beats2
   (->>
-    (phrase (repeat 1)
-            (take 15 (cycle [0])))
-     (where :part (is :theBeats2))))
+   (phrase (take (* beatCount 2)   (cycle [3/8 6/8 3/8 4/8 8/8]))
+           (take (* beatCount  2) (cycle [0   nil  0  0    nil])))
+   (where :time  (from delayBeforeStart))
+   (where :part (is :theBeats2))))
 
-
-
-(def strumming
-  (->>
-    (phrase [   1/3 1/2 1/3 1/2 1/2 3/4 3/4 1/2 3/4 1/2]
-            [   [9 12 16]  nil   nil   nil   nil   [9 12 16]   nil   nil   [9 12 16]   [ 7 11 14] ])
-    
-
-    (then (phrase
-            [3/2    1/3 1/2 1/3 1/2 1/2 3/4 3/4 1/2 3/4]
-            [nil   [9 12 16]  nil   nil   nil   nil   [9 12 16]   nil   nil   [ 8 11 14]  ]))
-
-
-    (where :part (is :theStrumming))))
 
 (def melody
   (->>
 
-    (phrase [ 4  1/3 1/2 1/3 1/2 1/2 3/4 4/5 1/2 3/4 1/2]
-            [ nil  9   9   12   11   9   9   11   9   7   2])
+   (phrase [  4/8  5/8   4/8  6/8  6/8  9/8  9/8  6/8   8/8  6/8]
+           [  0    0     2    1    0    0    1    0     -1   -4 ])
 
-    (then (phrase
-            [5/2  1/3 1/2 1/3 1/2 1/2 3/4 4/5 1/2 3/4 1/2]
-            [nil 9  9   12   11   9   9   11   9   8 ]))
-
-
-    (where :part (is :thePart))))
-
+   (where :time  (from delayBeforeStart))
+   (where :part (is :thePart))))
 
 
 (def melody1
   (->>
 
-    (phrase [ 4  1/3 1/2 1/3 1/2 1/2 3/4 3/4 1/2 3/4 1/2]
-            [ nil  9   9   12   11   9   9   11   9   7   2])
+   (phrase [ 1/3 1/2 1/3 1/2 1/2 3/4 4/5 1/2 3/4 1/2]
+           [  9   9   12   11   9   9   11   9   7   2])
 
-    (then (phrase
-            [5/2    1/3 1/2 1/3 1/2 1/2 3/4 3/4 1/2 3/4]
-            [nil 9  9   12   11   9   9   11   9   8 ]))
-    (where :part (is :thePart))))
+   (then (phrase
+          [5/2  1/3 1/2 1/3 1/2 1/2 3/4 4/5 1/2 3/4 1/2]
+          [nil 9  9   12   11   9   9   11   9   8 ]))
 
-(->>
-  melody
-;  beats1
-;  (with strumming)
-  (with beats1)
-  (with beats2)
-  (where :time (bpm 90))
-  (where :duration (bpm 90))
- (where :pitch (comp C chromatic high))
-  play)
+   (where :time  (from delayBeforeStart))
+   (where :part (is :thePart))))
+
+
+(defn doit [] 
+  (->>
+   melody
+   (with beats1)
+   (with beats2)
+   (where :time (bpm 120))
+   (where :duration (bpm 120))
+   (where :pitch (comp A flat minor))
+   play))
