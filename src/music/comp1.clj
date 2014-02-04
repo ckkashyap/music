@@ -17,7 +17,7 @@
 
 
 
-(def beatCount 10)
+(def beatCount 15)
 (def delayBeforeStart 1/4)
 
 (def beats1
@@ -38,8 +38,13 @@
 (def melody
   (->>
 
-   (phrase [  4/8  5/8   4/8  6/8  6/8  9/8  9/8  6/8   8/8  6/8]
-           [  0    0     2    1    0    0    1    0     -1   -4 ])
+   (phrase [  4/8  5/8   4/8  6/8  6/8  9/8  9/8  6/8   8/8  6/8 ]
+           [  0    0     2    1    0    0    1    0     -1   -4  ])
+
+
+   (then (phrase
+           [ 4    4/8  5/8   4/8  6/8  6/8  9/8  9/8  6/8   8/8 ]
+           [ nil  0    0     2    1    0    0    1    0     -1/2  ]))
 
    (where :time  (from delayBeforeStart))
    (where :part (is :thePart))))
